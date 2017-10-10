@@ -1,0 +1,26 @@
+{
+  "name": "fng-bootstrap-datetime",
+  "description": "datetime input plugin for forms-angular, using angular-ui-bootstrap-datetimepicker",
+  "main": [
+    "fng-bootstrap-datetime.js",
+    "fng-bootstrap-datetime.css"
+    ],
+  "authors": [
+    "Mark Chapman"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "forms-angular"
+  ],
+  "homepage": "https://github.com/forms-angular/fng-bootstrap-datetime",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-bootstrap-datetimepicker":"latest"
+  }
+}
