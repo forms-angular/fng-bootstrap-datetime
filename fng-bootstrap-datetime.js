@@ -20,12 +20,16 @@
             'date-format': 'dd/MM/yyyy'
           };
 
-          // Set form to dirty when required.  Works OK with existing records - hopefully new records will have other field types
+          // // Set form to dirty when required.  Works OK with existing records - hopefully new records will have other field types
           var watchField = attrs.model + '.' + attrs.fngFldName;
           var formName = attrs.fngOptName;
           scope.$watch(watchField, function (newVal, oldVal) {
             if (newVal && oldVal && newVal !== oldVal) {
-              scope[formName].$setDirty();
+              var newComp = (typeof newVal === 'string') ? newVal : newVal.toISOString();
+              var oldComp = (typeof oldVal === 'string') ? oldVal : oldVal.toISOString();
+              if (newComp !== oldComp) {
+                scope[formName].$setDirty();
+              }
             }
           });
 
