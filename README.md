@@ -6,12 +6,11 @@ Plugin for forms-angular that adds datetime picker support.
 
     bower install fng-bootstrap-datetime
 
+
 Add the following lines to your index.html (or equivalent) file.
 
-    <link rel="stylesheet" href="bower_components/angular-ui-bootstrap-datetimepicker/datetimepicker.css">
-    <link rel="stylesheet" href="bower_components/fng-bootstrap-datetime/fng-bootstrap-datetime.css">
-    <script src="bower_components/fng-bootstrap-datetime/fng-bootstrap-datetime.js"></script>
-    <script src="bower_components/angular-ui-bootstrap-datetimepicker/datetimepicker.js"></script>
+    <link rel="stylesheet" href="fng-bootstrap-datetime/fng-bootstrap-datetime.css">
+    <script src="fng-bootstrap-datetime/fng-bootstrap-datetime.js"></script>
 
 Add `fng.uiBootstrapDatetime` to the list of servies your Angular module depends on. 
 
