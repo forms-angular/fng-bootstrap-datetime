@@ -369,7 +369,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           var watchField = attrs.model + '.' + attrs.fngFldName;
           var formName = attrs.fngOptName;
           scope.$watch(watchField, function (newVal, oldVal) {
-            if (newVal && oldVal && newVal !== oldVal) {
+            if (scope[formName] && newVal && oldVal && newVal !== oldVal) {
               var newComp = (typeof newVal === 'string') ? newVal : newVal.toISOString();
               var oldComp = (typeof oldVal === 'string') ? oldVal : oldVal.toISOString();
               if (newComp !== oldComp) {
