@@ -156,6 +156,17 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
         },
         controller: ['$scope', '$attrs',
           function ($scope, $attrs) {
+            let form;
+            function getForm() {
+              if (!form) {
+                let workingScope = $scope;
+                while (typeof workingScope.topLevelFormName !== "string") {
+                  workingScope = workingScope.$parent;
+                }
+                form = workingScope[workingScope.topLevelFormName];
+              }
+            }
+            getForm();
             $scope.date_change = function () {
               // If we changed the date only, set the time (h,m) on it.
               // This is important in case the previous date was null.
@@ -166,11 +177,13 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
                 $scope.ngModel.setHours(time.getHours(), time.getMinutes(), 0, 0);
                 $scope.ngModel = new Date($scope.ngModel); // By default, ngModel watches the model by reference, not value. This is important to know when binding inputs to models that are objects (e.g. Date) (from: https://docs.angularjs.org/api/ng/directive/ngModel)
               }
+              form.$setDirty();
             };
             $scope.time_change = function () {
               if ($scope.ngModel && $scope.time) {
                 $scope.ngModel.setHours($scope.time.getHours(), $scope.time.getMinutes(), 0, 0);
                 $scope.ngModel = new Date($scope.ngModel); // By default, ngModel watches the model by reference, not value. This is important to know when binding inputs to models that are objects (e.g. Date) (from: https://docs.angularjs.org/api/ng/directive/ngModel)
+                form.$setDirty();
               }  // else the time is invalid, keep the current Date value in datepicker
             };
             $scope.open = function ($event) {
