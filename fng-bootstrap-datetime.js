@@ -160,7 +160,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             function getForm() {
               if (!form) {
                 let workingScope = $scope;
-                while (typeof workingScope.topLevelFormName !== "string") {
+                while (typeof workingScope.topLevelFormName !== "string" && workingScope.$parent) {
                   workingScope = workingScope.$parent;
                 }
                 form = workingScope[workingScope.topLevelFormName];
