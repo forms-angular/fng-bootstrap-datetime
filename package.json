@@ -1,6 +1,6 @@
 {
   "name": "fng-bootstrap-datetime",
-  "version": "0.12.0-beta.39",
+  "version": "0.12.0-beta.40",
   "description": "datetime input plugin for forms-angular",
   "main": "fng-bootstrap-datetime.js",
   "scripts": {
