@@ -98,7 +98,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           }
 
           var dateTmpl = "<div class=\"datetimepicker-wrapper\">" +
-            "<input class=\"form-control\" type=\"text\" " +
+            "<input placeholder=\"Date picker\" class=\"form-control\" type=\"text\" " +
             "name=\"datepicker\"" +
             "ng-change=\"date_change($event)\" " +
             "is-open=\"innerDateOpened\" " +
