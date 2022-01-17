@@ -402,7 +402,9 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             jsonDateOptions = JSON.parse(processedAttr.directiveOptions['date-options'].replace(/'/g, '"'));
           }
           scope.dateOptions = Object.assign({}, overRiddenDateDefaults, jsonDateOptions);
-          template = pluginHelper.buildInputMarkup(scope, attrs.model, processedAttr.info, processedAttr.options, false, false, function (buildingBlocks) {
+          
+          const isArray = processedAttr.info.array;
+          template = pluginHelper.buildInputMarkup(scope, attrs.model, processedAttr.info, processedAttr.options, isArray, isArray, function (buildingBlocks) {
             var str = '<div class="dtwrap"><datetimepicker ' + buildingBlocks.common;
             for (var opt in overRiddenDefaults) {
               if (opt !== 'date-options') {
