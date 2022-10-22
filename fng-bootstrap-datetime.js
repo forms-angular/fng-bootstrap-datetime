@@ -429,37 +429,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
                 str += ` ${opt}="${overriddenDefaults[opt]}"`;
               }
             }
-            let disabledStr = pluginHelper.handleReadOnlyDisabled(processedAttr.info.id, attrs, true)?.trim() || "";
-            // disabledStr might now include an ng-disabled attribute.  To disable both the date and time inputs, we need to
-            // take the value of that attribute and wrap it up as two new attributes: "disabledDate" and "readonlyTime"
-            // (which is what the datetimepicker directive is expecting to receive)
-            if (disabledStr) {
-              // disabledStr should contain either 'ng-disabled="xxxx"' or 'ng-readonly="yyyy"', or both.
-              // the values of xxxx and yyyy could be more-or-less anything, and certainly they could include = or ", which
-              // makes parsing hard
-              // our strategy will be to re-format disabledStr as if it was the string representation of an object, and
-              // then parse it.  we can then refer to the ng-disabled and ng-readonly attributes of the parsed object.
-              // in the future, perhaps ng-disabled and ng-readonly will be changed to data-ng-disabled and data-ng-readonly
-              disabledStr = disabledStr.replace('data-ng-disabled', 'ng-disabled');
-              disabledStr = disabledStr.replace('data-ng-readonly', 'ng-readonly');
-              disabledStr = disabledStr.replace('ng-disabled=', '"ng-disabled":');
-              disabledStr = disabledStr.replace('ng-readonly=', '"ng-readonly":');
-              try {
-                disabledStr = `{ ${disabledStr} }`;
-                const disabledObj = JSON.parse(disabledStr);
-                disabledStr = disabledObj["ng-disabled"];
-                // cannot see a way to sensibly deal with both ng-disabled and ng-readonly.  Let's just ignore the ng-readonly
-                // for now - with the way handleReadOnlyDisabled is currently written, this means we'll be unable to fully
-                // support a datetime field with a string-typed "readonly" attribute and where fngAngular's elemSecurityFuncBinding
-                // option is set up to "one-time" or "normal".  
-                if (disabledStr) {
-                  str += ` disabledDate="${disabledStr}" readonlyTime="${disabledStr}"`;
-                }
-              } catch (e) {
-                // give up
-              }              
-            }
-
+            str += " " + pluginHelper.handleDateTimePickerReadOnlyDisabled(processedAttr.info.id, attrs);
             str += ' date-options="dateOptions"></datetimepicker></div>';
             return str;
           });
