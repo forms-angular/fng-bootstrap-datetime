@@ -391,7 +391,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
         priority: 1,
         link: function (scope, element, attrs) {
           var template;
-          var processedAttr = pluginHelper.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
+          var processedAttrs = pluginHelper.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
           var overriddenDefaults = {
             'show-button-bar': false,
             'show-meridian': false,
@@ -411,28 +411,37 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             }
           });
 
-          overriddenDefaults = Object.assign({}, overriddenDefaults, processedAttr.directiveOptions);
+          overriddenDefaults = Object.assign({}, overriddenDefaults, processedAttrs.directiveOptions);
           var overriddenDateDefaults = {
             showWeeks: false
           };
           var jsonDateOptions = {};
-          if (processedAttr.directiveOptions['date-options']) {
-            jsonDateOptions = JSON.parse(processedAttr.directiveOptions['date-options'].replace(/'/g, '"'));
+          if (processedAttrs.directiveOptions['date-options']) {
+            jsonDateOptions = JSON.parse(processedAttrs.directiveOptions['date-options'].replace(/'/g, '"'));
           }
           scope.dateOptions = Object.assign({}, overriddenDateDefaults, jsonDateOptions);
           
-          const isArray = processedAttr.info.array;
-          template = pluginHelper.buildInputMarkup(scope, attrs.model, processedAttr.info, processedAttr.options, isArray, isArray, function (buildingBlocks) {
-            var str = '<div class="dtwrap"><datetimepicker ' + buildingBlocks.common.trim();
-            for (var opt in overriddenDefaults) {
-              if (opt !== 'date-options') {
-                str += ` ${opt}="${overriddenDefaults[opt]}"`;
+          const isArray = processedAttrs.info.array;
+          template = pluginHelper.buildInputMarkup(
+            scope,
+            attrs,
+            {
+              processedAttrs,
+              addButtons: isArray,
+              needsX: isArray,
+            },
+            function (buildingBlocks) {
+              var str = '<div class="dtwrap"><datetimepicker ' + buildingBlocks.common.trim();
+              for (var opt in overriddenDefaults) {
+                if (opt !== 'date-options') {
+                  str += ` ${opt}="${overriddenDefaults[opt]}"`;
+                }
               }
+              str += " " + pluginHelper.genDateTimePickerDisabledStr(scope, processedAttrs, "");
+              str += ' date-options="dateOptions"></datetimepicker></div>';
+              return str;
             }
-            str += " " + pluginHelper.handleDateTimePickerReadOnlyDisabled(processedAttr.info.id, attrs);
-            str += ' date-options="dateOptions"></datetimepicker></div>';
-            return str;
-          });
+          );
           element.replaceWith($compile(template)(scope));
         }
       };
