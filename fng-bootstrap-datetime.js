@@ -55,7 +55,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           hiddenDate: "=",
           datepickerTemplateUrl: "@",
           datepickerPopupTemplateUrl: "@",
-          timepickerTemplateUrl: "@"
+          timepickerTemplateUrl: "@",
         },
         template: function (elem, attrs) {
           function dashCase(name) {
@@ -67,9 +67,10 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           function createAttr(innerAttr, dateTimeAttrOpt) {
             var dateTimeAttr = angular.isDefined(dateTimeAttrOpt) ? dateTimeAttrOpt : innerAttr;
             if (attrs[dateTimeAttr]) {
-              return dashCase(innerAttr) + "=\"" + dateTimeAttr + "\" ";
-            } else if (dateTimeAttr in attrs) { // attribute with an empty value such as "required"
-              return dateTimeAttr + " ";
+              return `${dashCase(innerAttr)}="${attrs[dateTimeAttr]}" `;
+            } else if (dateTimeAttr in attrs) { 
+              // attribute with an empty value such as "required"
+              return `${dateTimeAttr} `;
             } else {
               return '';
             }
@@ -78,18 +79,18 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           function createFuncAttr(innerAttr, funcArgs, dateTimeAttrOpt, defaultImpl) {
             var dateTimeAttr = angular.isDefined(dateTimeAttrOpt) ? dateTimeAttrOpt : innerAttr;
             if (attrs[dateTimeAttr]) {
-              return dashCase(innerAttr) + "=\"" + dateTimeAttr + "({" + funcArgs + "})\" ";
+              return `${dashCase(innerAttr)}="${dateTimeAttr}({${funcArgs}})" `;
             } else {
-              return angular.isDefined(defaultImpl) ? dashCase(innerAttr) + "=\"" + defaultImpl + "\"" : "";
+              return angular.isDefined(defaultImpl) ? `${dashCase(innerAttr)}="${defaultImpl}" ` : "";
             }
           }
 
           function createEvalAttr(innerAttr, dateTimeAttrOpt) {
             var dateTimeAttr = angular.isDefined(dateTimeAttrOpt) ? dateTimeAttrOpt : innerAttr;
             if (attrs[dateTimeAttr]) {
-              return dashCase(innerAttr) + "=\"" + attrs[dateTimeAttr] + "\" ";
+              return `${dashCase(innerAttr)}="${attrs[dateTimeAttr]}" `;
             } else {
-              return dashCase(innerAttr) + " ";
+              return `${dashCase(innerAttr)} `;
             }
           }
 
@@ -116,9 +117,9 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
               ["yearRange"],
               ["required"],
               ["showButtonBar"],
-              ["ngHide", "hiddenDate"],
-              ["ngReadonly", "readonlyDate"],
-              ["ngDisabled", "disabledDate"]
+              ["ngHide", "hiddendate"],
+              ["ngReadonly", "readonlydate"],
+              ["ngDisabled", "disableddate"]
             ].reduce(createAttrConcat, '') +
             createFuncAttr("ngClick",
               "$event: $event, opened: opened",
@@ -145,8 +146,8 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
               ["required"],
               ["meredians"],
               ["mousewheel"],
-              ["ngHide", "hiddenTime"],
-              ["ngDisabled", "readonlyTime"]
+              ["ngHide", "hiddentime"],
+              ["ngDisabled", "readonlytime"]
             ].reduce(createAttrConcat, '') +
             createEvalAttr("showSpinners", "showSpinners") +
             createEvalAttr("templateUrl", "timepickerTemplateUrl") +
@@ -169,6 +170,23 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
               }
             }
             getForm();
+            // ****************************************************
+            // HACK RIGHT HERE!
+            // For cases where formsAngular.elemSecurityFuncBinding is set to either "one-time" or "normal", the
+            // result of the call to handleReadOnlyDisabled() made by the fngUiBootstrapDatetimePicker directive will
+            // include reference(s) to the function identified by formsAngular.elemSecurityFuncName (with the
+            // assumption that external code has assigned a function of that name to $rootScope).  because our
+            // scope is isolated, this will be inaccessible unless we do the following...:
+            if (formsAngular.elemSecurityFuncName) {
+              $scope[formsAngular.elemSecurityFuncName] = $scope.$root[formsAngular.elemSecurityFuncName];
+            }            
+            // as this is only going to work for disabled state arising from fng security, and not the case
+            // where an fng field has a string-valued readonly attribute that refers to a function on the parent 
+            // scope, it's only a partial solution.  the general solution would presumably be to replace our isolated
+            // scope definition with "scope:true", thus giving it full ancestor access.  however, I gave
+            // that a quick try and found that it broke things, and it doesn't seem worth spending any more time
+            // on that right now.
+            // ****************************************************
             $scope.date_change = function () {
               // If we changed the date only, set the time (h,m) on it.
               // This is important in case the previous date was null.
@@ -364,8 +382,8 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
   uiBootstrapDateModule.controller('fngUiBootstrapDatetimePickerCtrl',['$scope', function($scope) {
       $scope.dateOptions = {};
     }])
-    .directive('fngUiBootstrapDatetimePicker', ['$compile', '$filter', 'pluginHelper', 'formMarkupHelper', 'cssFrameworkService',
-    function ($compile, $filter, pluginHelper) {
+    .directive('fngUiBootstrapDatetimePicker', ['$compile', 'pluginHelper',
+    function ($compile, pluginHelper) {
       return {
         restrict: 'E',
         replace: true,
@@ -373,8 +391,8 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
         priority: 1,
         link: function (scope, element, attrs) {
           var template;
-          var processedAttr = pluginHelper.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
-          var overRiddenDefaults = {
+          var processedAttrs = pluginHelper.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
+          var overriddenDefaults = {
             'show-button-bar': false,
             'show-meridian': false,
             'date-format': 'dd/MM/yyyy'
@@ -393,27 +411,37 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             }
           });
 
-          overRiddenDefaults = Object.assign({}, overRiddenDefaults, processedAttr.directiveOptions);
-          var overRiddenDateDefaults = {
+          overriddenDefaults = Object.assign({}, overriddenDefaults, processedAttrs.directiveOptions);
+          var overriddenDateDefaults = {
             showWeeks: false
           };
           var jsonDateOptions = {};
-          if (processedAttr.directiveOptions['date-options']) {
-            jsonDateOptions = JSON.parse(processedAttr.directiveOptions['date-options'].replace(/'/g, '"'));
+          if (processedAttrs.directiveOptions['date-options']) {
+            jsonDateOptions = JSON.parse(processedAttrs.directiveOptions['date-options'].replace(/'/g, '"'));
           }
-          scope.dateOptions = Object.assign({}, overRiddenDateDefaults, jsonDateOptions);
+          scope.dateOptions = Object.assign({}, overriddenDateDefaults, jsonDateOptions);
           
-          const isArray = processedAttr.info.array;
-          template = pluginHelper.buildInputMarkup(scope, attrs.model, processedAttr.info, processedAttr.options, isArray, isArray, function (buildingBlocks) {
-            var str = '<div class="dtwrap"><datetimepicker ' + buildingBlocks.common;
-            for (var opt in overRiddenDefaults) {
-              if (opt !== 'date-options') {
-                str += ' ' + opt + '="' + overRiddenDefaults[opt] + '"';
+          const isArray = processedAttrs.info.array;
+          template = pluginHelper.buildInputMarkup(
+            scope,
+            attrs,
+            {
+              processedAttrs,
+              addButtons: isArray,
+              needsX: isArray,
+            },
+            function (buildingBlocks) {
+              var str = '<div class="dtwrap"><datetimepicker ' + buildingBlocks.common.trim();
+              for (var opt in overriddenDefaults) {
+                if (opt !== 'date-options') {
+                  str += ` ${opt}="${overriddenDefaults[opt]}"`;
+                }
               }
+              str += " " + pluginHelper.genDateTimePickerDisabledStr(scope, processedAttrs, "");
+              str += ' date-options="dateOptions"></datetimepicker></div>';
+              return str;
             }
-            str += ' date-options="dateOptions"></datetimepicker></div>';
-            return str;
-          });
+          );
           element.replaceWith($compile(template)(scope));
         }
       };
