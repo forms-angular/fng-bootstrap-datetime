@@ -173,12 +173,12 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             // ****************************************************
             // HACK RIGHT HERE!
             // For cases where formsAngular.elemSecurityFuncBinding is set to either "one-time" or "normal", the
-            // result of the call to genDateTimePickerDisabledStr() made by the fngUiBootstrapDatetimePicker directive will
-            // include reference(s) to the function identified by formsAngular.elemSecurityFuncName (with the
-            // assumption that external code has assigned a function of that name to $rootScope).  because our
+            // result of the call to handleReadOnlyDisabled() made by the fngUiBootstrapDatetimePicker directive will
+            // include reference(s) to the function identified by formsAngular.disabledSecurityFuncName (with the
+            // assumption that external code has assigned a function of that name to $rootScope).  Because our
             // scope is isolated, this will be inaccessible unless we do the following...:
             if (formsAngular.elemSecurityFuncName) {
-              $scope[formsAngular.elemSecurityFuncName] = $scope.$root[formsAngular.elemSecurityFuncName];
+              $scope[formsAngular.disabledSecurityFuncName] = $scope.$root[formsAngular.disabledSecurityFuncName];
               $scope.isSecurelyDisabled = $scope.$parent.isSecurelyDisabled;
               $scope.isSecurelyHidden = $scope.$parent.isSecurelyHidden;
             }            
