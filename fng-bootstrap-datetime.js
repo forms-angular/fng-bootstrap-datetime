@@ -173,13 +173,14 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             // ****************************************************
             // HACK RIGHT HERE!
             // For cases where formsAngular.elemSecurityFuncBinding is set to either "one-time" or "normal", the
-            // result of the call to handleReadOnlyDisabled() made by the fngUiBootstrapDatetimePicker directive will
-            // include reference(s) to the function identified by formsAngular.elemSecurityFuncName (with the
-            // assumption that external code has assigned a function of that name to $rootScope).  because our
-            // scope is isolated, this will be inaccessible unless we do the following...:
-            if (formsAngular.elemSecurityFuncName) {
-              $scope[formsAngular.elemSecurityFuncName] = $scope.$root[formsAngular.elemSecurityFuncName];
-            }            
+            // result of the call to handleReadOnlyDisabled() made by the fngUiBootstrapDatetimePicker directive might
+            // include reference(s) to two functions which our ancestor form scope should have been decorated with -
+            // isSecurelyDisabled and requiresDisabledChildren.  Because our scope is isolated, these will be
+            // inaccessible to us unless we do the following...:
+            if (formsAngular.disabledSecurityFuncName) {
+              $scope.isSecurelyDisabled = $scope.$parent.isSecurelyDisabled;
+              $scope.requiresDisabledChildren = $scope.$parent.requiresDisabledChildren;
+            }   
             // as this is only going to work for disabled state arising from fng security, and not the case
             // where an fng field has a string-valued readonly attribute that refers to a function on the parent 
             // scope, it's only a partial solution.  the general solution would presumably be to replace our isolated
