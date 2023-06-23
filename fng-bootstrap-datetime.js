@@ -383,8 +383,8 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
   uiBootstrapDateModule.controller('fngUiBootstrapDatetimePickerCtrl',['$scope', function($scope) {
       $scope.dateOptions = {};
     }])
-    .directive('fngUiBootstrapDatetimePicker', ['$compile', 'pluginHelper',
-    function ($compile, pluginHelper) {
+    .directive('fngUiBootstrapDatetimePicker', ['$compile', 'PluginHelperService',
+    function ($compile, PluginHelperService) {
       return {
         restrict: 'E',
         replace: true,
@@ -392,7 +392,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
         priority: 1,
         link: function (scope, element, attrs) {
           var template;
-          var processedAttrs = pluginHelper.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
+          var processedAttrs = PluginHelperService.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
           var overriddenDefaults = {
             'show-button-bar': false,
             'show-meridian': false,
@@ -423,7 +423,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           scope.dateOptions = Object.assign({}, overriddenDateDefaults, jsonDateOptions);
           
           const isArray = processedAttrs.info.array;
-          template = pluginHelper.buildInputMarkup(
+          template = PluginHelperService.buildInputMarkup(
             scope,
             attrs,
             {
@@ -438,7 +438,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
                   str += ` ${opt}="${overriddenDefaults[opt]}"`;
                 }
               }
-              str += " " + pluginHelper.genDateTimePickerDisabledStr(scope, processedAttrs, "");
+              str += " " + PluginHelperService.genDateTimePickerDisabledStr(scope, processedAttrs, "");
               str += ' date-options="dateOptions"></datetimepicker></div>';
               return str;
             }
