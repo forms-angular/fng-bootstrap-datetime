@@ -398,7 +398,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
         priority: 1,
         link: function (scope, element, attrs) {
           var template;
-          var processedAttrs = PluginHelperService.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker');
+          var processedAttrs = PluginHelperService.extractFromAttr(attrs, 'fngUiBootstrapDatetimePicker', scope);
           var overriddenDefaults = {
             'show-button-bar': false,
             'show-meridian': false,
