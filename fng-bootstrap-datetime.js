@@ -102,6 +102,7 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
             "<input class=\"form-control\" " +
             "type=\"text\" " +
             "name=\"datepicker\"" +
+            "autocomplete=\"off\"" +
             'aria-label="' + (attrs.name || attrs.ngModel).replace(/[\.,-]/g, ' ') + '"' +
             "ng-change=\"date_change($event)\" " +
             "is-open=\"innerDateOpened\" " +
