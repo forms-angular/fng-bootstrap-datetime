@@ -409,10 +409,25 @@ angular.module('ui.bootstrap.datetimepicker', ["ui.bootstrap.dateparser", "ui.bo
           // Set form to dirty when required.  Works OK with existing records - hopefully new records will have other field types
           var watchField = attrs.model + '.' + attrs.fngFldName;
           var formName = attrs.fngOptName;
+          // The model value is normally a string or a Date, but can be something else (e.g. a number, or an invalid Date
+          // whose toISOString() throws), so compare on a representation that can always be produced
+          function comparable(val) {
+            if (typeof val === 'string') {
+              return val;
+            }
+            if (typeof val.toISOString === 'function') {
+              try {
+                return val.toISOString();
+              } catch (e) {
+                // Invalid Date - fall through
+              }
+            }
+            return String(val);
+          }
           scope.$watch(watchField, function (newVal, oldVal) {
             if (scope[formName] && newVal && oldVal && newVal !== oldVal) {
-              var newComp = (typeof newVal === 'string') ? newVal : newVal.toISOString();
-              var oldComp = (typeof oldVal === 'string') ? oldVal : oldVal.toISOString();
+              var newComp = comparable(newVal);
+              var oldComp = comparable(oldVal);
               if (newComp !== oldComp) {
                 scope[formName].$setDirty();
               }
